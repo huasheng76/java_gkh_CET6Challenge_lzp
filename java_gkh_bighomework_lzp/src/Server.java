@@ -29,6 +29,7 @@ public class Server extends JFrame implements Runnable{
             while(true){
                 //将客户端连接到服务器端
                 s=ss.accept();
+
                 ChatThread ct = new ChatThread(s);
                 clients.add(ct);
                 ct.start();

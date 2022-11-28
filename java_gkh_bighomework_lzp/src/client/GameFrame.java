@@ -11,8 +11,8 @@ public class GameFrame extends JFrame{
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //setAlwaysOnTop(true);//设置窗体的属性，总是在最上面显示
         this.setAlwaysOnTop(true);
-        String nickName = JOptionPane.showInputDialog("输入昵称");
-        this.setTitle(nickName);
+        // nickName = JOptionPane.showInputDialog("输入昵称");
+        this.setTitle(gp.nickName);
         gp = new GamePanel();
         this.add(gp);
 

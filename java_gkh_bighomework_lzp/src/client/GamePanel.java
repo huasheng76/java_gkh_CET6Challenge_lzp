@@ -8,10 +8,12 @@ import java.net.*;
 import java.util.Random;
 import javax.swing.*;
 import javax.swing.Timer;
-import java.util.Scanner;
 import java.util.Vector;
 
 public class GamePanel extends JPanel implements Runnable,ActionListener,KeyListener{
+    public  static String nickName;//客户端名字
+    private String wrongtextName = "用户"+nickName+"的错误单词.txt";
+    private String righttextName = "用户"+nickName+"的正确单词.txt";
     private int life=10;
     private String tips = new String();
     private  JLabel lbMoveChar = new JLabel();//下落字符
@@ -25,7 +27,7 @@ public class GamePanel extends JPanel implements Runnable,ActionListener,KeyList
     private  char Keychar;
 
     private  Socket s = null;
-    private Timer timer =new Timer(300,this);
+    private Timer timer =new Timer(600,this);
 
     private Random rnd = new Random();
     private BufferedReader br = null;
@@ -71,9 +73,9 @@ public class GamePanel extends JPanel implements Runnable,ActionListener,KeyList
 
         //掉落线
         this.add(tfseparate1);
-        tfseparate1.setSize(900, 6);
+        tfseparate1.setSize(900, 1);
         tfseparate1.setLocation(0, 295);
-        tfseparate1.setBackground(Color.black);
+        tfseparate1.setBackground(Color.white);
 
         //设置单词框
         this.add(tfword);
@@ -97,13 +99,13 @@ public class GamePanel extends JPanel implements Runnable,ActionListener,KeyList
         //连接服务器
         try{
             s = new Socket("127.0.0.1",9999);
-
+            //连接服务端
             //JOptionPane.showMessageDialog(this,"连接成功");
-            InputStream is = s.getInputStream();
+            InputStream is = s.getInputStream();//获取流程与子流程的输入流
             br = new BufferedReader(new InputStreamReader(is));
             OutputStream os = s.getOutputStream();
             ps = new PrintStream(os);
-            new Thread(this).start();
+            new Thread(this).start();//多线程调用run方法
 
         }catch (Exception ex){
             javax.swing.JOptionPane.showMessageDialog(this,"游戏异常退出！");
@@ -116,7 +118,7 @@ public class GamePanel extends JPanel implements Runnable,ActionListener,KeyList
             @Override
             public void actionPerformed(ActionEvent e) {
                 try{if(tfword.getText().equals(word)){
-                    writeFile("C:\\Users\\25498\\IdeaProjects\\java_gkh_bighomework_lzp\\right.exe",strSave);
+                    writeFile("C:\\Users\\25498\\IdeaProjects\\java_gkh_bighomework_lzp\\"+righttextName,strSave);
                     life+=1;
                     System.out.println("恭喜回答正确");
                     tips="恭喜回答正确";
@@ -124,7 +126,7 @@ public class GamePanel extends JPanel implements Runnable,ActionListener,KeyList
                 }
 
                 else{
-                    writeFile("C:\\Users\\25498\\IdeaProjects\\java_gkh_bighomework_lzp\\wrong.exe",strSave+" 答错");
+                    writeFile("C:\\Users\\25498\\IdeaProjects\\java_gkh_bighomework_lzp\\"+wrongtextName,"答错 "+strSave);
                     life-=2;
                     ps.println("LIFE#0");
                     System.out.println("回答错误，答案是"+strSave);
@@ -259,7 +261,7 @@ public class GamePanel extends JPanel implements Runnable,ActionListener,KeyList
         readWords(filename);
         String str = inputWords.get(il);
         strSave = str+"\r\n";
-        String[] strs = str.split("\\s+");
+        String[] strs = str.split("\\s+");//正则表达式分割英文与中文
         word = strs[0];
         Chinese = strs[1];
         //将题目给lbempty
@@ -282,12 +284,11 @@ public class GamePanel extends JPanel implements Runnable,ActionListener,KeyList
         lbLife.setText("当前生命值"+ life);
 
         readLineFile("C:\\Users\\25498\\IdeaProjects\\java_gkh_bighomework_lzp\\Word.txt",il);
-
-        //TODO:位置设置
+        System.out.println("正确答案是："+word);
         lbempty.setBounds(450,400,300,50);
         tftips.setText(tips);
         lbMoveChar.setText(Chinese);
-        lbMoveChar.setBounds(370,0,200,50);
+        lbMoveChar.setBounds(350,0,400,50);
         tfword.setText("");//将输入框置空
     }
 
@@ -357,7 +358,7 @@ public class GamePanel extends JPanel implements Runnable,ActionListener,KeyList
     //单词掉落动画
     public void actionPerformed(ActionEvent e){
         if(lbMoveChar.getY() >= 260){
-            writeFile("C:\\Users\\25498\\IdeaProjects\\java_gkh_bighomework_lzp\\wrong.txt",strSave+" 没答");
+            writeFile("C:\\Users\\25498\\IdeaProjects\\java_gkh_bighomework_lzp\\"+wrongtextName,"没答 "+strSave);
             //life--;
             checkFail();
             System.out.println("您没有回答，答案是"+strSave);
@@ -412,6 +413,7 @@ public class GamePanel extends JPanel implements Runnable,ActionListener,KeyList
     }
 
     public static void main(String[] args){
+        nickName = JOptionPane.showInputDialog("输入昵称");
         new GameFrame();
     }
 }
